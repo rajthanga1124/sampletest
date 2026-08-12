@@ -23,18 +23,30 @@ jobs:
 
       - name: Install JMeter
         run: |
-          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.2.tgz
-          tar -xzf apache-jmeter-5.6.2.tgz
-          mv apache-jmeter-5.6.2 jmeter
+          JMETER_VERSION=5.6.2
+
+          # Remove any previous JMeter folder
+          rm -rf jmeter
+          rm -rf apache-jmeter-$JMETER_VERSION
+      
+          # Download and extract
+          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-$JMETER_VERSION.tgz
+          tar -xzf apache-jmeter-$JMETER_VERSION.tgz
+      
+          # Rename extracted folder
+          mv apache-jmeter-$JMETER_VERSION jmeter
+      
+          # Verify installation
+          ls -la jmeter/bin
 
       - name: Run JMeter Test
         run: |
-          JMETER_VERSION=5.6.2
-          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-$JMETER_VERSION.tgz
-          tar -xzf apache-jmeter-$JMETER_VERSION.tgz
-          ls -la
-          mv apache-jmeter-$JMETER_VERSION jmeter
-          ls -la jmeter/bin
+          ./jmeter/bin/jmeter \
+            -n \
+            -t jmeter/load-test.jmx \
+            -l results/results.jtl \
+            -e \
+            -o results/dashboard
           
       
             
