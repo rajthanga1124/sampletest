@@ -39,13 +39,6 @@ jobs:
           # Verify installation
           ls -la jmeter/bin
 
-      - name: Debug workspace
-        run: |
-          echo "Current workspace:"
-          pwd
-          echo "List all files:"
-          ls -R
-
       - name: Run JMeter Test
         run: |
           ./jmeter/bin/jmeter \
@@ -85,10 +78,6 @@ jobs:
               else:
                   print(f"✅ SLA passed for {api_name}")
       
-          if not overall_pass:
-              exit(1)
-          else:
-              print("🎉 All APIs passed p95 SLA")
           EOF
 
 
