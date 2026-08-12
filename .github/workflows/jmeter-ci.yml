@@ -39,11 +39,18 @@ jobs:
           # Verify installation
           ls -la jmeter/bin
 
+      - name: Debug workspace
+        run: |
+          echo "Current workspace:"
+          pwd
+          echo "List all files:"
+          ls -R
+
       - name: Run JMeter Test
         run: |
           ./jmeter/bin/jmeter \
             -n \
-            -t sampletest/jmeter/json_exercise.jmx \
+            -t jmeter/json_exercise.jmx \
             -l results/results.jtl \
             -e \
             -o results/dashboard
