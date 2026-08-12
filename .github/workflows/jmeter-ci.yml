@@ -55,7 +55,10 @@ jobs:
             -e \
             -o results/dashboard
           
-      
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install pandas
             
       - name: Validate p95 SLA for each API
         run: |
