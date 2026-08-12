@@ -50,7 +50,7 @@ jobs:
         run: |
           ./jmeter/bin/jmeter \
             -n \
-            -t jmeter/json_exercise.jmx \
+            -t tests/json_exercise.jmx \
             -l results/results.jtl \
             -e \
             -o results/dashboard
