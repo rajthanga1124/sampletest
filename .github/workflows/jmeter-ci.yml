@@ -1,1 +1,77 @@
 
+name: JMeter CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  run-jmeter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install JMeter
+        run: |
+          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.2.tgz
+          tar -xzf apache-jmeter-5.6.2.tgz
+          mv apache-jmeter-5.6.2 jmeter
+
+      - name: Run JMeter Test
+        run: |
+          ./jmeter/bin/jmeter \
+            -n \
+            -t jmeter/json_exercise.jmx \
+            -l results/results.jtl \
+            -e \
+            -o results/dashboard
+          
+      
+            
+      - name: Validate p95 SLA for each API
+        run: |
+          python3 - << 'EOF'
+          import pandas as pd
+      
+          df = pd.read_csv('results/results.jtl')
+      
+          # Group by API (sampler label)
+          apis = df.groupby('label')
+      
+          # SLA limit
+          SLA_P95 = 800
+      
+          overall_pass = True
+      
+          for api_name, api_data in apis:
+              p95 = api_data['elapsed'].quantile(0.95)
+              print(f"API: {api_name} → p95 = {p95} ms")
+      
+              if p95 > SLA_P95:
+                  print(f"❌ SLA breached for {api_name} (limit: {SLA_P95} ms)")
+                  overall_pass = False
+              else:
+                  print(f"✅ SLA passed for {api_name}")
+      
+          if not overall_pass:
+              exit(1)
+          else:
+              print("🎉 All APIs passed p95 SLA")
+          EOF
+
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-results
+          path: results
