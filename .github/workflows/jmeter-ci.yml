@@ -29,12 +29,12 @@ jobs:
 
       - name: Run JMeter Test
         run: |
-          ./jmeter/bin/jmeter \
-            -n \
-            -t jmeter/json_exercise.jmx \
-            -l results/results.jtl \
-            -e \
-            -o results/dashboard
+          JMETER_VERSION=5.6.2
+          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-$JMETER_VERSION.tgz
+          tar -xzf apache-jmeter-$JMETER_VERSION.tgz
+          ls -la
+          mv apache-jmeter-$JMETER_VERSION jmeter
+          ls -la jmeter/bin
           
       
             
